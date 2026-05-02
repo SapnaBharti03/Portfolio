@@ -18,6 +18,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 import { SITE } from "@/config";
 
 const nav = [
@@ -43,7 +44,7 @@ export function AdminLayout() {
 
   const handleLogout = () => {
     logout();
-    toast.success("Logged out");
+    toast.success(fun.loggedOut());
     navigate("/login", { replace: true });
   };
 

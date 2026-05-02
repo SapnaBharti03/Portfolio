@@ -10,6 +10,7 @@ import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { Field } from "@/admin/components/Field";
 import { ImageUpload } from "@/admin/components/ImageUpload";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 interface Post {
   id: number;
@@ -54,8 +55,8 @@ export default function BlogAdmin() {
   const onSave = () => {
     if (!form.title.trim()) return toast.error("Title is required");
     const next = { ...form, slug: form.slug || slugify(form.title) };
-    if (editing) { update(editing.id, next); toast.success("Post updated"); }
-    else { create(next); toast.success("Post created"); }
+    if (editing) { update(editing.id, next); toast.success(fun.updated("Post")); }
+    else { create(next); toast.success(fun.created("Post")); }
     setOpen(false);
   };
 
@@ -120,7 +121,7 @@ export default function BlogAdmin() {
         onOpenChange={(o) => !o && setConfirm(null)}
         description={`Delete "${confirm?.title}"?`}
         onConfirm={() => {
-          if (confirm) { remove(confirm.id); toast.success("Post deleted"); }
+          if (confirm) { remove(confirm.id); toast.success(fun.deleted("Post")); }
           setConfirm(null);
         }}
       />

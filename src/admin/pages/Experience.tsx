@@ -10,6 +10,7 @@ import { FormDialog } from "@/admin/components/FormDialog";
 import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { Field } from "@/admin/components/Field";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 interface Experience {
   id: number;
@@ -51,8 +52,8 @@ export default function ExperienceAdmin() {
   };
   const onSave = () => {
     if (!form.company_name.trim() || !form.role.trim()) return toast.error("Company and role required");
-    if (editing) { update(editing.id, form); toast.success("Experience updated"); }
-    else { create(form); toast.success("Experience created"); }
+    if (editing) { update(editing.id, form); toast.success(fun.updated("Experience")); }
+    else { create(form); toast.success(fun.created("Experience")); }
     setOpen(false);
   };
 
@@ -119,7 +120,7 @@ export default function ExperienceAdmin() {
         onOpenChange={(o) => !o && setConfirm(null)}
         description={`Delete "${confirm?.role} @ ${confirm?.company_name}"?`}
         onConfirm={() => {
-          if (confirm) { remove(confirm.id); toast.success("Experience deleted"); }
+          if (confirm) { remove(confirm.id); toast.success(fun.deleted("Experience")); }
           setConfirm(null);
         }}
       />

@@ -6,6 +6,7 @@ import { Field } from "@/admin/components/Field";
 import { ImageUpload } from "@/admin/components/ImageUpload";
 import { useSingleton } from "@/admin/store";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 import { z } from "zod";
 
 interface ProfileData {
@@ -45,7 +46,7 @@ export default function ProfilePage() {
       return;
     }
     save(form);
-    toast.success("Profile updated");
+    toast.success(fun.updated("Profile"));
   };
 
   return (

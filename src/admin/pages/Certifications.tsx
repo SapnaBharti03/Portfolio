@@ -7,6 +7,7 @@ import { FormDialog } from "@/admin/components/FormDialog";
 import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { Field } from "@/admin/components/Field";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 interface Cert {
   id: number;
@@ -35,8 +36,8 @@ export default function CertificationsAdmin() {
   };
   const onSave = () => {
     if (!form.name.trim()) return toast.error("Name is required");
-    if (editing) { update(editing.id, form); toast.success("Updated"); }
-    else { create(form); toast.success("Created"); }
+    if (editing) { update(editing.id, form); toast.success(fun.updated("Certification")); }
+    else { create(form); toast.success(fun.created("Certification")); }
     setOpen(false);
   };
 
@@ -72,7 +73,7 @@ export default function CertificationsAdmin() {
         onOpenChange={(o) => !o && setConfirm(null)}
         description={`Delete "${confirm?.name}"?`}
         onConfirm={() => {
-          if (confirm) { remove(confirm.id); toast.success("Deleted"); }
+          if (confirm) { remove(confirm.id); toast.success(fun.deleted("Certification")); }
           setConfirm(null);
         }}
       />

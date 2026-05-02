@@ -11,6 +11,7 @@ import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { Field } from "@/admin/components/Field";
 import { ImageUpload } from "@/admin/components/ImageUpload";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 interface Project {
   id: number;
@@ -69,10 +70,10 @@ export default function ProjectsAdmin() {
     }
     if (editing) {
       update(editing.id, form);
-      toast.success("Project updated");
+      toast.success(fun.updated("Project"));
     } else {
       create(form);
-      toast.success("Project created");
+      toast.success(fun.created("Project"));
     }
     setOpen(false);
   };
@@ -176,7 +177,7 @@ export default function ProjectsAdmin() {
         onConfirm={() => {
           if (confirm) {
             remove(confirm.id);
-            toast.success("Project deleted");
+            toast.success(fun.deleted("Project"));
           }
           setConfirm(null);
         }}

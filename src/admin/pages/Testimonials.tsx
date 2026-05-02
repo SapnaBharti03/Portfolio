@@ -9,6 +9,7 @@ import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { Field } from "@/admin/components/Field";
 import { ImageUpload } from "@/admin/components/ImageUpload";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 interface Testimonial {
   id: number;
@@ -47,8 +48,8 @@ export default function TestimonialsAdmin() {
   const onSave = () => {
     if (!form.client_name.trim() || !form.review_text.trim()) return toast.error("Name and review required");
     if (form.star_rating < 1 || form.star_rating > 5) return toast.error("Rating 1–5");
-    if (editing) { update(editing.id, form); toast.success("Updated"); }
-    else { create(form); toast.success("Created"); }
+    if (editing) { update(editing.id, form); toast.success(fun.updated("Testimonial")); }
+    else { create(form); toast.success(fun.created("Testimonial")); }
     setOpen(false);
   };
 
@@ -98,7 +99,7 @@ export default function TestimonialsAdmin() {
         onOpenChange={(o) => !o && setConfirm(null)}
         description={`Delete review by "${confirm?.client_name}"?`}
         onConfirm={() => {
-          if (confirm) { remove(confirm.id); toast.success("Deleted"); }
+          if (confirm) { remove(confirm.id); toast.success(fun.deleted("Testimonial")); }
           setConfirm(null);
         }}
       />

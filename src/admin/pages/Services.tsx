@@ -8,6 +8,7 @@ import { FormDialog } from "@/admin/components/FormDialog";
 import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { Field } from "@/admin/components/Field";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 interface Service {
   id: number;
@@ -34,8 +35,8 @@ export default function ServicesAdmin() {
   };
   const onSave = () => {
     if (!form.title.trim()) return toast.error("Title is required");
-    if (editing) { update(editing.id, form); toast.success("Service updated"); }
-    else { create(form); toast.success("Service created"); }
+    if (editing) { update(editing.id, form); toast.success(fun.updated("Service")); }
+    else { create(form); toast.success(fun.created("Service")); }
     setOpen(false);
   };
 
@@ -71,7 +72,7 @@ export default function ServicesAdmin() {
         onOpenChange={(o) => !o && setConfirm(null)}
         description={`Delete "${confirm?.title}"?`}
         onConfirm={() => {
-          if (confirm) { remove(confirm.id); toast.success("Service deleted"); }
+          if (confirm) { remove(confirm.id); toast.success(fun.deleted("Service")); }
           setConfirm(null);
         }}
       />

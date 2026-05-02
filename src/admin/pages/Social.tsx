@@ -7,6 +7,7 @@ import { FormDialog } from "@/admin/components/FormDialog";
 import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { Field } from "@/admin/components/Field";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 interface Social {
   id: number;
@@ -34,8 +35,8 @@ export default function SocialAdmin() {
   };
   const onSave = () => {
     if (!form.platform.trim() || !form.url.trim()) return toast.error("Platform and URL required");
-    if (editing) { update(editing.id, form); toast.success("Updated"); }
-    else { create(form); toast.success("Created"); }
+    if (editing) { update(editing.id, form); toast.success(fun.updated("Link")); }
+    else { create(form); toast.success(fun.created("Link")); }
     setOpen(false);
   };
 
@@ -68,7 +69,7 @@ export default function SocialAdmin() {
         onOpenChange={(o) => !o && setConfirm(null)}
         description={`Delete "${confirm?.platform}"?`}
         onConfirm={() => {
-          if (confirm) { remove(confirm.id); toast.success("Deleted"); }
+          if (confirm) { remove(confirm.id); toast.success(fun.deleted("Link")); }
           setConfirm(null);
         }}
       />
