@@ -40,7 +40,7 @@ export function Contact() {
     setErrors({});
     setSubmitting(true);
     try {
-      await postContact(result.data);
+      await postContact(result.data as { name: string; email: string; subject: string; message: string });
       toast.success("Message sent! I'll reply within 24 hours.");
       setForm({ name: "", email: "", subject: "", message: "" });
     } catch {
