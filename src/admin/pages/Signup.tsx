@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { Field } from "@/admin/components/Field";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 const schema = z.object({
   name: z.string().trim().min(2, "At least 2 characters").max(80),
@@ -37,7 +38,7 @@ export default function Signup() {
     setLoading(true);
     try {
       await signup(parsed.data.name, parsed.data.email, parsed.data.password);
-      toast.success("Account created");
+      toast.success(fun.signup());
       navigate("/admin", { replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Signup failed");

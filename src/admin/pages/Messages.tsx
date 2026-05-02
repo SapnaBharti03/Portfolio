@@ -6,6 +6,7 @@ import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { Mail, Trash2, Eye } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 interface Message {
   id: number;
@@ -114,7 +115,7 @@ export default function MessagesAdmin() {
         onOpenChange={(o) => !o && setConfirm(null)}
         description={`Delete message from "${confirm?.name}"?`}
         onConfirm={() => {
-          if (confirm) { remove(confirm.id); toast.success("Message deleted"); }
+          if (confirm) { remove(confirm.id); toast.success(fun.deleted("Message")); }
           setConfirm(null);
         }}
       />

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth, ADMIN_DEFAULT_CREDENTIALS } from "@/contexts/AuthContext";
 import { Field } from "@/admin/components/Field";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 import { SITE } from "@/config";
 
 const schema = z.object({
@@ -41,7 +42,7 @@ export default function Login() {
     setLoading(true);
     try {
       await login(parsed.data.email, parsed.data.password);
-      toast.success("Welcome back");
+      toast.success(fun.welcome());
       navigate(from, { replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Login failed");

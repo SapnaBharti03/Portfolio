@@ -8,51 +8,52 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Dark premium portfolio — indigo accent */
-    --background: 0 0% 4%;            /* #0a0a0a */
-    --foreground: 0 0% 98%;
+    /* Aurora — warm coral × teal on a deep midnight base */
+    --background: 230 32% 7%;         /* deep midnight navy */
+    --foreground: 36 33% 96%;         /* warm off-white */
 
-    --surface: 240 6% 8%;             /* slightly lifted surface */
-    --surface-elevated: 240 6% 11%;
+    --surface: 230 25% 11%;
+    --surface-elevated: 230 22% 14%;
 
-    --card: 240 6% 8%;
-    --card-foreground: 0 0% 98%;
+    --card: 230 25% 11%;
+    --card-foreground: 36 33% 96%;
 
-    --popover: 240 6% 8%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 230 25% 11%;
+    --popover-foreground: 36 33% 96%;
 
-    --primary: 239 84% 67%;           /* indigo #6366f1 */
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 250 89% 75%;
+    --primary: 350 89% 65%;           /* coral / rose */
+    --primary-foreground: 230 35% 8%;
+    --primary-glow: 28 96% 64%;       /* amber */
 
-    --secondary: 240 5% 14%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 230 20% 16%;
+    --secondary-foreground: 36 33% 96%;
 
-    --muted: 240 5% 12%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 230 18% 14%;
+    --muted-foreground: 230 10% 68%;
 
-    --accent: 239 84% 67%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 172 78% 52%;            /* teal — second accent */
+    --accent-foreground: 230 35% 8%;
 
-    --destructive: 0 72% 55%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --success: 152 70% 45%;
+    --success: 160 70% 45%;
     --success-foreground: 0 0% 100%;
 
-    --border: 240 5% 16%;
-    --input: 240 5% 14%;
-    --ring: 239 84% 67%;
+    --border: 230 18% 18%;
+    --input: 230 18% 16%;
+    --ring: 350 89% 65%;
 
     --radius: 0.875rem;
 
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
-    --gradient-radial: radial-gradient(circle at 50% 0%, hsl(var(--primary) / 0.18), transparent 60%);
-    --gradient-mesh: radial-gradient(at 20% 20%, hsl(239 84% 67% / 0.18) 0px, transparent 50%),
-                     radial-gradient(at 80% 30%, hsl(280 89% 65% / 0.15) 0px, transparent 50%),
-                     radial-gradient(at 50% 80%, hsl(220 89% 60% / 0.12) 0px, transparent 50%);
+    --gradient-radial: radial-gradient(circle at 50% 0%, hsl(var(--primary) / 0.22), transparent 60%);
+    --gradient-mesh: radial-gradient(at 18% 22%, hsl(350 89% 65% / 0.22) 0px, transparent 50%),
+                     radial-gradient(at 82% 18%, hsl(28 96% 64% / 0.18) 0px, transparent 50%),
+                     radial-gradient(at 70% 80%, hsl(172 78% 52% / 0.18) 0px, transparent 50%),
+                     radial-gradient(at 30% 90%, hsl(280 70% 60% / 0.12) 0px, transparent 50%);
 
-    --shadow-glow: 0 0 60px -10px hsl(var(--primary) / 0.5);
+    --shadow-glow: 0 0 70px -10px hsl(var(--primary) / 0.55);
     --shadow-elegant: 0 20px 50px -20px hsl(0 0% 0% / 0.6);
     --shadow-card: 0 8px 30px -12px hsl(0 0% 0% / 0.5);
 

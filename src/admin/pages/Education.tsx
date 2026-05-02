@@ -8,6 +8,7 @@ import { FormDialog } from "@/admin/components/FormDialog";
 import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { Field } from "@/admin/components/Field";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 interface Education {
   id: number;
@@ -45,8 +46,8 @@ export default function EducationAdmin() {
   };
   const onSave = () => {
     if (!form.degree.trim() || !form.institution.trim()) return toast.error("Degree and institution required");
-    if (editing) { update(editing.id, form); toast.success("Updated"); }
-    else { create(form); toast.success("Created"); }
+    if (editing) { update(editing.id, form); toast.success(fun.updated("Education")); }
+    else { create(form); toast.success(fun.created("Education")); }
     setOpen(false);
   };
 
@@ -92,7 +93,7 @@ export default function EducationAdmin() {
         onOpenChange={(o) => !o && setConfirm(null)}
         description={`Delete "${confirm?.degree}"?`}
         onConfirm={() => {
-          if (confirm) { remove(confirm.id); toast.success("Deleted"); }
+          if (confirm) { remove(confirm.id); toast.success(fun.deleted("Education")); }
           setConfirm(null);
         }}
       />

@@ -8,6 +8,7 @@ import { FormDialog } from "@/admin/components/FormDialog";
 import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { Field } from "@/admin/components/Field";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 interface Skill {
   id: number;
@@ -30,8 +31,8 @@ export default function SkillsAdmin() {
   const onSave = () => {
     if (!form.name.trim()) return toast.error("Name is required");
     if (form.proficiency < 0 || form.proficiency > 100) return toast.error("Proficiency must be 0–100");
-    if (editing) { update(editing.id, form); toast.success("Skill updated"); }
-    else { create(form); toast.success("Skill created"); }
+    if (editing) { update(editing.id, form); toast.success(fun.updated("Skill")); }
+    else { create(form); toast.success(fun.created("Skill")); }
     setOpen(false);
   };
 
@@ -70,7 +71,7 @@ export default function SkillsAdmin() {
         onOpenChange={(o) => !o && setConfirm(null)}
         description={`Delete "${confirm?.name}"?`}
         onConfirm={() => {
-          if (confirm) { remove(confirm.id); toast.success("Skill deleted"); }
+          if (confirm) { remove(confirm.id); toast.success(fun.deleted("Skill")); }
           setConfirm(null);
         }}
       />

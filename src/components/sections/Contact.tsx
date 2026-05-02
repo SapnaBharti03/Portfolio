@@ -10,6 +10,7 @@ import { SocialIcons } from "@/components/portfolio/SocialIcons";
 import { useResource } from "@/hooks/useResource";
 import { postContact } from "@/lib/api";
 import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 const schema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
@@ -41,10 +42,10 @@ export function Contact() {
     setSubmitting(true);
     try {
       await postContact(result.data as { name: string; email: string; subject: string; message: string });
-      toast.success("Message sent! I'll reply within 24 hours.");
+      toast.success(fun.contactSent());
       setForm({ name: "", email: "", subject: "", message: "" });
     } catch {
-      toast.error("Something went wrong. Please try again.");
+      toast.error(fun.error());
     } finally {
       setSubmitting(false);
     }
