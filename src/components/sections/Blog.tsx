@@ -3,6 +3,8 @@ import { ArrowUpRight } from "lucide-react";
 import { SectionHeading } from "@/components/portfolio/SectionHeading";
 import { Skeleton } from "@/components/portfolio/Skeleton";
 import { useResource } from "@/hooks/useResource";
+import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 interface Post { id: number; slug: string; title: string; excerpt: string; cover_image: string; published_at: string; tags: string[] }
 
@@ -24,7 +26,7 @@ export function Blog() {
               <motion.a
                 key={p.id}
                 href={`/blog/${p.slug}`}
-                onClick={(e) => e.preventDefault()}
+                onClick={(e) => { e.preventDefault(); toast(fun.blogOpen()); }}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}

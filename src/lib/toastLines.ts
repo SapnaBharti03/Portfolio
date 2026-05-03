@@ -41,6 +41,46 @@ export const lines = {
     "Account ready. Welcome aboard 🎉",
     "You're in the club. Let's build.",
   ],
+  cvDownload: () => [
+    "CV on its way 📄 Hope it makes for good reading!",
+    "Grabbing the resume… don't skip the projects section 😉",
+    "CV downloaded — fingers crossed 🤞",
+  ],
+  copied: (label = "Copied") => [
+    `${label}! Paste it somewhere fun 📋`,
+    `${label} to clipboard ✨`,
+  ],
+  hireMe: () => [
+    "Excellent taste 💼 Scrolling you down — let's talk.",
+    "Buckle up — drop me a line below and we'll make it happen ✦",
+    "Love that energy. The contact form awaits ✍️",
+  ],
+  viewWork: () => [
+    "Buckle up — entering the project zone 🚀",
+    "Showtime! Have a look around 👀",
+    "Project gallery loading… hope you brought coffee ☕",
+  ],
+  externalLink: (where = "site") => [
+    `Off to the ${where} — see you on the other side 🌐`,
+    `Opening ${where} in a new tab… fly safe ✈️`,
+  ],
+  socialFollow: (platform = "social") => [
+    `Heading to ${platform} — let's connect there 👋`,
+    `Off to ${platform}. Don't forget to say hi!`,
+  ],
+  filterChange: (cat: string) => [
+    `Filtering for ${cat} — only the good stuff ✨`,
+    `${cat} only. Curated for you.`,
+    `Showing ${cat} projects 🎯`,
+  ],
+  projectOpen: (title: string) => [
+    `Opening "${title}" — grab a seat 🍿`,
+    `Diving into "${title}"… enjoy the read 📖`,
+  ],
+  blogOpen: () => [
+    "Opening the read 📖 Hope you enjoy it!",
+    "Article incoming — stay a while ☕",
+  ],
   validation: (msg: string) => msg,
 };
 
@@ -53,4 +93,13 @@ export const fun = {
   welcome: () => pick(lines.welcome()),
   loggedOut: () => pick(lines.loggedOut()),
   signup: () => pick(lines.signup()),
+  cvDownload: () => pick(lines.cvDownload()),
+  copied: (label?: string) => pick(lines.copied(label)),
+  hireMe: () => pick(lines.hireMe()),
+  viewWork: () => pick(lines.viewWork()),
+  externalLink: (where?: string) => pick(lines.externalLink(where)),
+  socialFollow: (platform?: string) => pick(lines.socialFollow(platform)),
+  filterChange: (cat: string) => pick(lines.filterChange(cat)),
+  projectOpen: (title: string) => pick(lines.projectOpen(title)),
+  blogOpen: () => pick(lines.blogOpen()),
 };

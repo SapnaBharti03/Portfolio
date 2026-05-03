@@ -1,4 +1,6 @@
 import { Github, Linkedin, Twitter, Instagram, Globe } from "lucide-react";
+import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 const map: Record<string, React.ComponentType<{ className?: string }>> = {
   github: Github,
@@ -22,6 +24,7 @@ export function SocialIcons({ items, size = "default" }: { items: Social[]; size
             target="_blank"
             rel="noreferrer"
             aria-label={s.platform}
+            onClick={() => toast(fun.socialFollow(s.platform))}
             className={`${dims} grid place-items-center rounded-full glass text-muted-foreground hover:text-primary hover:border-primary/60 transition-all hover:-translate-y-0.5`}
           >
             <Icon className="h-4 w-4" />

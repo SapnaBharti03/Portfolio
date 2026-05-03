@@ -68,14 +68,22 @@ export function Contact() {
               <div className="h-11 w-11 rounded-xl bg-gradient-primary grid place-items-center text-primary-foreground shadow-glow shrink-0"><Mail className="h-4 w-4" /></div>
               <div>
                 <div className="text-xs uppercase tracking-widest text-muted-foreground">Email</div>
-                <a href={`mailto:${profile?.email}`} className="text-sm hover:text-primary transition-colors">{profile?.email ?? "—"}</a>
+                <a
+                  href={`mailto:${profile?.email}`}
+                  onClick={() => profile?.email && toast(fun.externalLink("your mail app"))}
+                  className="text-sm hover:text-primary transition-colors"
+                >{profile?.email ?? "—"}</a>
               </div>
             </div>
             <div className="flex items-start gap-4">
               <div className="h-11 w-11 rounded-xl bg-gradient-primary grid place-items-center text-primary-foreground shadow-glow shrink-0"><Phone className="h-4 w-4" /></div>
               <div>
                 <div className="text-xs uppercase tracking-widest text-muted-foreground">Phone</div>
-                <a href={`tel:${profile?.phone}`} className="text-sm hover:text-primary transition-colors">{profile?.phone ?? "—"}</a>
+                <a
+                  href={`tel:${profile?.phone}`}
+                  onClick={() => profile?.phone && toast("Dialing… let's chat ☎️")}
+                  className="text-sm hover:text-primary transition-colors"
+                >{profile?.phone ?? "—"}</a>
               </div>
             </div>
             <div className="flex items-start gap-4">
