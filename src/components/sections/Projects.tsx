@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/portfolio/SectionHeading";
 import { Skeleton } from "@/components/portfolio/Skeleton";
 import { useResource } from "@/hooks/useResource";
+import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 interface Project {
   id: number; title: string; short_description: string; full_description: string;
@@ -35,7 +37,7 @@ export function Projects() {
           {categories.map((c) => (
             <button
               key={c}
-              onClick={() => setFilter(c)}
+              onClick={() => { setFilter(c); if (c !== filter) toast(fun.filterChange(c)); }}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${
                 filter === c
                   ? "bg-gradient-primary text-primary-foreground border-transparent shadow-glow"
@@ -63,7 +65,7 @@ export function Projects() {
                   exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ duration: 0.4, delay: idx * 0.04 }}
                   whileHover={{ y: -6 }}
-                  onClick={() => setActive(p)}
+                  onClick={() => { setActive(p); toast(fun.projectOpen(p.title)); }}
                   className="group text-left glass rounded-2xl overflow-hidden hover:border-primary/50 transition-all"
                 >
                   <div className="relative aspect-[16/10] overflow-hidden">
@@ -149,12 +151,12 @@ export function Projects() {
                 )}
 
                 <div className="mt-7 flex flex-wrap gap-3">
-                  {active.live_url && (
-                    <Button variant="hero" asChild><a href={active.live_url} target="_blank" rel="noreferrer"><ExternalLink className="h-4 w-4" /> Live</a></Button>
-                  )}
-                  {active.github_url && (
-                    <Button variant="glass" asChild><a href={active.github_url} target="_blank" rel="noreferrer"><Github className="h-4 w-4" /> GitHub</a></Button>
-                  )}
+                   {active.live_url && (
+                     <Button variant="hero" asChild><a href={active.live_url} target="_blank" rel="noreferrer" onClick={() => toast(fun.externalLink("live demo"))}><ExternalLink className="h-4 w-4" /> Live</a></Button>
+                   )}
+                   {active.github_url && (
+                     <Button variant="glass" asChild><a href={active.github_url} target="_blank" rel="noreferrer" onClick={() => toast(fun.externalLink("GitHub"))}><Github className="h-4 w-4" /> GitHub</a></Button>
+                   )}
                 </div>
               </div>
             </motion.div>
