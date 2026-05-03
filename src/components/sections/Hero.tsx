@@ -5,6 +5,8 @@ import { TypingText } from "@/components/portfolio/TypingText";
 import { SocialIcons } from "@/components/portfolio/SocialIcons";
 import { Skeleton } from "@/components/portfolio/Skeleton";
 import { useResource } from "@/hooks/useResource";
+import { toast } from "sonner";
+import { fun } from "@/lib/toastLines";
 
 interface Profile {
   name: string; title: string; roles: string[]; tagline: string; photo: string; cv_url: string;
@@ -53,15 +55,15 @@ export function Hero() {
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button variant="hero" size="xl" onClick={() => scrollTo("#projects")}>
+            <Button variant="hero" size="xl" onClick={() => { toast(fun.viewWork()); scrollTo("#projects"); }}>
               View My Work <ArrowRight className="h-4 w-4" />
             </Button>
-            <Button variant="glass" size="xl" onClick={() => scrollTo("#contact")}>
+            <Button variant="glass" size="xl" onClick={() => { toast(fun.hireMe()); scrollTo("#contact"); }}>
               Hire Me
             </Button>
             {profile?.cv_url && (
               <Button variant="ghost" size="xl" asChild>
-                <a href={profile.cv_url}><Download className="h-4 w-4" /> Download CV</a>
+                <a href={profile.cv_url} onClick={() => toast(fun.cvDownload())}><Download className="h-4 w-4" /> Download CV</a>
               </Button>
             )}
           </div>
