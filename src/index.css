@@ -21,9 +21,9 @@ All colors MUST be HSL.
     --popover: 250 28% 11%;
     --popover-foreground: 250 20% 96%;
 
-    --primary: 265 85% 66%;           /* vivid purple */
-    --primary-foreground: 250 35% 8%;
-    --primary-glow: 285 90% 70%;      /* magenta glow */
+    --primary: 252 83% 67%;           /* indigo / violet */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 270 85% 72%;      /* soft violet glow */
 
     --secondary: 250 22% 16%;
     --secondary-foreground: 250 20% 96%;
@@ -42,14 +42,14 @@ All colors MUST be HSL.
 
     --border: 250 20% 18%;
     --input: 250 20% 16%;
-    --ring: 265 85% 66%;
+    --ring: 252 83% 67%;
 
     --radius: 0.875rem;
 
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 100%);
     --gradient-radial: radial-gradient(circle at 50% 0%, hsl(var(--primary) / 0.22), transparent 60%);
-    --gradient-mesh: radial-gradient(at 18% 22%, hsl(265 85% 66% / 0.22) 0px, transparent 50%),
-                     radial-gradient(at 82% 18%, hsl(285 90% 70% / 0.18) 0px, transparent 50%),
+    --gradient-mesh: radial-gradient(at 18% 22%, hsl(252 83% 67% / 0.22) 0px, transparent 50%),
+                     radial-gradient(at 82% 18%, hsl(270 85% 72% / 0.18) 0px, transparent 50%),
                      radial-gradient(at 70% 80%, hsl(200 95% 64% / 0.16) 0px, transparent 50%),
                      radial-gradient(at 30% 90%, hsl(310 70% 60% / 0.14) 0px, transparent 50%);
 
