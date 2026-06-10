@@ -24,7 +24,7 @@ app.config["SUPABASE_URL"] = SUPABASE_URL
 
 CORS(
     app,
-    origins=["http://localhost:8080", "http://127.0.0.1:8080"],
+    origins=["http://localhost:8080", "http://127.0.0.1:8080","https://sapnas-portfolio.onrender.com"],
     supports_credentials=True,
     allow_headers=[
         "Content-Type",
