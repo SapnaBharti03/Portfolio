@@ -1,6 +1,6 @@
 import { SocialIcons } from "@/components/portfolio/SocialIcons";
+import { useSiteBranding } from "@/hooks/useSiteBranding";
 import { useResource } from "@/hooks/useResource";
-import { SITE } from "@/config";
 
 interface Profile { name: string; tagline: string }
 interface Social { id: number; platform: string; url: string; icon: string }
@@ -14,6 +14,7 @@ const links = [
 ];
 
 export function Footer() {
+  const { name, initial } = useSiteBranding();
   const { data: profile } = useResource<Profile>("profile");
   const { data: socials } = useResource<Social[]>("social-links");
 
@@ -22,8 +23,8 @@ export function Footer() {
       <div className="container py-14 grid md:grid-cols-3 gap-10">
         <div>
           <div className="flex items-center gap-2">
-            <span className="h-9 w-9 rounded-xl bg-gradient-primary grid place-items-center font-display font-bold text-primary-foreground">{SITE.brand[0]}</span>
-            <span className="font-display font-semibold text-lg">{profile?.name ?? SITE.brand}</span>
+            <span className="h-9 w-9 rounded-xl bg-gradient-primary grid place-items-center font-display font-bold text-primary-foreground">{initial}</span>
+            <span className="font-display font-semibold text-lg">{name}</span>
           </div>
           <p className="mt-4 text-sm text-muted-foreground max-w-xs leading-relaxed">{profile?.tagline}</p>
         </div>
@@ -46,7 +47,7 @@ export function Footer() {
       </div>
       <div className="border-t border-border">
         <div className="container py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
-          <span>© {new Date().getFullYear()} {profile?.name ?? SITE.brand}. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} {name}. All rights reserved.</span>
           {/* <span>Crafted with care · React + Tailwind + Framer Motion</span> */}
         </div>
       </div>

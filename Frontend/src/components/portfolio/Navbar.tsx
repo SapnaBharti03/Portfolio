@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SITE } from "@/config";
+import { useSiteBranding } from "@/hooks/useSiteBranding";
 
 const links = [
   { label: "Home", href: "#home", always: true },
@@ -46,6 +46,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const navLinks = useVisibleNavLinks();
+  const { name, initial, loading } = useSiteBranding();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -72,9 +73,11 @@ export function Navbar() {
       <nav className="container flex items-center justify-between">
         <a href="#home" onClick={(e) => { e.preventDefault(); scrollTo("#home"); }} className="flex items-center gap-2 group">
           <span className="h-9 w-9 rounded-xl bg-gradient-primary grid place-items-center font-display font-bold text-primary-foreground shadow-glow">
-            {SITE.brand[0]}
+            {loading ? "…" : initial}
           </span>
-          <span className="font-display font-semibold text-lg tracking-tight hidden sm:block">{SITE.brand}</span>
+          <span className="font-display font-semibold text-lg tracking-tight hidden sm:block">
+            {loading ? "…" : name}
+          </span>
         </a>
 
         <div className="hidden lg:flex items-center gap-1">

@@ -19,7 +19,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { fun } from "@/lib/toastLines";
-import { SITE } from "@/config";
+import { useSiteBranding } from "@/hooks/useSiteBranding";
 
 const nav = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -38,6 +38,7 @@ const nav = [
 
 export function AdminLayout() {
   const { user, logout } = useAuth();
+  const { name } = useSiteBranding();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const current = nav.find((n) => (n.end ? pathname === n.to : pathname.startsWith(n.to)));
@@ -56,7 +57,7 @@ export function AdminLayout() {
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-gradient-primary glow" />
             <div>
-              <p className="text-sm font-semibold">{SITE.brand}</p>
+              <p className="text-sm font-semibold">{name}</p>
               <p className="text-xs text-muted-foreground">Admin Panel</p>
             </div>
           </div>

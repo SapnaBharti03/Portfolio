@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { useAuth } from "@/contexts/AuthContext"
 import { Field } from "@/admin/components/Field"
 import { toast } from "sonner"
-import { SITE } from "@/config"
+import { useSiteBranding } from "@/hooks/useSiteBranding"
 
 const schema = z.object({
   email: z.string().trim().email("Enter a valid email").max(255),
@@ -26,6 +26,7 @@ export default function Login() {
   const [password, setPassword] = useState("")
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
   const [loading, setLoading] = useState(false)
+  const { name } = useSiteBranding()
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -63,7 +64,7 @@ export default function Login() {
           <div className="mx-auto h-12 w-12 rounded-xl bg-gradient-primary glow mb-4" />
           <h1 className="text-2xl font-bold">Admin sign in</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {SITE.brand} portfolio control panel
+            {name} portfolio control panel
           </p>
         </div>
 
