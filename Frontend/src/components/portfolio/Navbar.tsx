@@ -4,6 +4,8 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSiteBranding } from "@/hooks/useSiteBranding";
 
+import { usePortfolioContext } from "@/contexts/PortfolioContext";
+
 const links = [
   { label: "Home", href: "#home", always: true },
   { label: "About", href: "#about" },
@@ -18,6 +20,7 @@ const links = [
 
 function useVisibleNavLinks() {
   const [visible, setVisible] = useState<Record<string, boolean>>({});
+  const portfolio = usePortfolioContext();
 
   useEffect(() => {
     const sync = () => {
@@ -34,10 +37,10 @@ function useVisibleNavLinks() {
     };
 
     sync();
-    const observer = new MutationObserver(sync);
-    observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
-  }, []);
+    if (portfolio?.loading) return;
+    const id = window.requestAnimationFrame(sync);
+    return () => window.cancelAnimationFrame(id);
+  }, [portfolio?.loading]);
 
   return links.filter((link) => visible[link.href] !== false);
 }
@@ -46,7 +49,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const navLinks = useVisibleNavLinks();
-  const { name, initial, loading } = useSiteBranding();
+  const { name, initial } = useSiteBranding();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -73,10 +76,10 @@ export function Navbar() {
       <nav className="container flex items-center justify-between">
         <a href="#home" onClick={(e) => { e.preventDefault(); scrollTo("#home"); }} className="flex items-center gap-2 group">
           <span className="h-9 w-9 rounded-xl bg-gradient-primary grid place-items-center font-display font-bold text-primary-foreground shadow-glow">
-            {loading ? "…" : initial}
+            {initial}
           </span>
           <span className="font-display font-semibold text-lg tracking-tight hidden sm:block">
-            {loading ? "…" : name}
+            {name}
           </span>
         </a>
 

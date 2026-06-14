@@ -23,8 +23,58 @@ api_bp = Blueprint(
     url_prefix="/api"
 )
 
+REORDERABLE_TABLES = {
+    "projects": "public.projects",
+    "skills": "public.skills",
+    "services": "public.services",
+    "experience": "public.experience",
+    "education": "public.education",
+    "certifications": "public.certifications",
+    "testimonials": "public.testimonials",
+    "blog-posts": "public.blog_posts",
+    "social-links": "public.social_links",
+}
+
 # ─── Global Supabase Client ────────────────────────────────────────────────────
 supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+
+
+@api_bp.put("/reorder/<string:resource>")
+@token_required
+def reorder_items(resource):
+    table = REORDERABLE_TABLES.get(resource)
+    if not table:
+        return jsonify({"success": False, "error": "Unknown resource"}), 404
+
+    data = request.get_json(silent=True) or {}
+    ids = data.get("ids")
+    if not isinstance(ids, list) or not ids:
+        return jsonify({"success": False, "error": "ids array is required"}), 400
+
+    try:
+        conn = connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        for index, item_id in enumerate(ids):
+            cursor.execute(
+                f"""
+                UPDATE {table}
+                SET display_order = %s
+                WHERE id = %s AND is_deleted = false
+                RETURNING id
+                """,
+                (index, str(item_id)),
+            )
+            if not cursor.fetchone():
+                conn.rollback()
+                cursor.close()
+                conn.close()
+                return jsonify({"success": False, "error": f"Item not found: {item_id}"}), 404
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({"success": True, "message": "Order updated"}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 # ─── Upload ────────────────────────────────────────────────────────────────────
@@ -629,7 +679,7 @@ def get_education():
             SELECT id, degree, field_of_study, institution, start_year, end_year, description
             FROM public.education
             WHERE is_deleted = false
-            ORDER BY start_year DESC
+            ORDER BY display_order ASC, start_year DESC
             """
         )
         education = cursor.fetchall()
@@ -749,7 +799,7 @@ def get_certifications():
             SELECT id, name, issuing_organization, issue_date, credential_url
             FROM public.certifications
             WHERE is_deleted = false
-            ORDER BY issue_date DESC
+            ORDER BY display_order ASC, issue_date DESC
             """
         )
         certifications = cursor.fetchall()
@@ -832,7 +882,7 @@ def get_testimonials():
             SELECT id, client_name, company, position, review_text, star_rating, client_photo_url
             FROM public.testimonials
             WHERE is_deleted = false
-            ORDER BY created_at DESC
+            ORDER BY display_order ASC, created_at DESC
             """
         )
         testimonials = cursor.fetchall()
@@ -997,7 +1047,7 @@ def get_blog_posts():
             SELECT id, title, slug, excerpt, cover_image_url, published_at, tags, content, created_by, status
             FROM public.blog_posts
             WHERE is_deleted = false
-            ORDER BY published_at DESC
+            ORDER BY display_order ASC, published_at DESC
             """
         )
         blog_posts = cursor.fetchall()
@@ -1114,7 +1164,7 @@ def get_social_links():
         conn   = connection()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute(
-            "SELECT id, platform, url, icon FROM public.social_links WHERE is_deleted = false ORDER BY created_at DESC"
+            "SELECT id, platform, url, icon FROM public.social_links WHERE is_deleted = false ORDER BY display_order ASC, created_at DESC"
         )
         social_links = cursor.fetchall()
         cursor.close()
@@ -1229,6 +1279,119 @@ def _format_profile(row):
     if p.get("photo_url"):
         p["photo"] = p["photo_url"]
     return p
+
+
+@api_bp.get("/home")
+def get_home():
+    """Single request for all public portfolio data (one DB connection)."""
+    try:
+        conn = connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        cursor.execute(
+            f"SELECT {_PROFILE_COLUMNS} FROM public.profile WHERE is_deleted = false LIMIT 1"
+        )
+        profile_row = cursor.fetchone()
+        profile = _format_profile(profile_row) if profile_row else None
+
+        cursor.execute(
+            "SELECT * FROM public.projects WHERE is_deleted = false ORDER BY display_order ASC"
+        )
+        projects = [dict(row) for row in cursor.fetchall()]
+
+        cursor.execute(
+            "SELECT * FROM public.skills WHERE is_deleted = false ORDER BY display_order ASC"
+        )
+        skills = [dict(row) for row in cursor.fetchall()]
+
+        cursor.execute(
+            """
+            SELECT id, title, description, icon, starting_price, display_order
+            FROM public.services
+            WHERE is_deleted = false
+            ORDER BY display_order ASC
+            """
+        )
+        services = [dict(row) for row in cursor.fetchall()]
+
+        cursor.execute(
+            """
+            SELECT id, company_name, role, employment_type, start_date, end_date,
+                   is_current, description, achievements, display_order
+            FROM public.experience
+            WHERE is_deleted = false
+            ORDER BY display_order ASC
+            """
+        )
+        experience = [dict(row) for row in cursor.fetchall()]
+
+        cursor.execute(
+            """
+            SELECT id, degree, field_of_study, institution, start_year, end_year, description
+            FROM public.education
+            WHERE is_deleted = false
+            ORDER BY start_year DESC
+            """
+        )
+        education = [dict(row) for row in cursor.fetchall()]
+
+        cursor.execute(
+            """
+            SELECT id, name, issuing_organization, issue_date, credential_url
+            FROM public.certifications
+            WHERE is_deleted = false
+            ORDER BY issue_date DESC
+            """
+        )
+        certifications = [dict(row) for row in cursor.fetchall()]
+
+        cursor.execute(
+            """
+            SELECT id, client_name, company, position, review_text, star_rating, client_photo_url
+            FROM public.testimonials
+            WHERE is_deleted = false
+            ORDER BY created_at DESC
+            """
+        )
+        testimonials = [dict(row) for row in cursor.fetchall()]
+
+        cursor.execute(
+            """
+            SELECT id, title, slug, excerpt, cover_image_url, published_at, tags, content, created_by, status
+            FROM public.blog_posts
+            WHERE is_deleted = false
+            ORDER BY published_at DESC
+            """
+        )
+        blog_posts = [dict(row) for row in cursor.fetchall()]
+
+        cursor.execute(
+            """
+            SELECT id, platform, url, icon
+            FROM public.social_links
+            WHERE is_deleted = false
+            ORDER BY created_at DESC
+            """
+        )
+        social_links = [dict(row) for row in cursor.fetchall()]
+
+        cursor.close()
+        conn.close()
+        return jsonify({
+            "success": True,
+            "profile": profile,
+            "projects": projects,
+            "skills": skills,
+            "services": services,
+            "experience": experience,
+            "education": education,
+            "certifications": certifications,
+            "testimonials": testimonials,
+            "blog_posts": blog_posts,
+            "social_links": social_links,
+        }), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @api_bp.get("/profile")

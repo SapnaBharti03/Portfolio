@@ -18,6 +18,10 @@ export function Hero() {
   const { data: profile, loading } = useResource<Profile>("profile");
   const { data: socials } = useResource<Social[]>("social-links");
 
+  const displayName = profile?.name?.trim() || SITE.fallbackName;
+  const displayTagline = profile?.tagline?.trim() || SITE.description;
+  const showPhoto = Boolean(profile?.photo);
+
   const scrollTo = (id: string) => document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
 
   return (
@@ -40,7 +44,7 @@ export function Hero() {
           </span>
 
           <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-semibold mt-6 tracking-tight leading-[1.05]">
-            Hi, I'm <span className="text-gradient">{loading ? "…" : profile?.name}</span>
+            Hi, I'm <span className="text-gradient">{displayName}</span>
             <br />
             <span className="text-muted-foreground text-3xl sm:text-4xl lg:text-5xl font-normal">
               {profile?.roles?.length ? (
@@ -52,7 +56,7 @@ export function Hero() {
           </h1>
 
           <p className="mt-6 text-base md:text-lg text-muted-foreground max-w-xl leading-relaxed">
-            {loading ? "Loading…" : profile?.tagline}
+            {displayTagline}
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -84,17 +88,17 @@ export function Hero() {
           <div className="relative">
             <div className="absolute -inset-4 bg-gradient-primary rounded-3xl blur-2xl opacity-40 animate-glow-pulse" />
             <div className="relative w-72 h-96 sm:w-80 sm:h-[440px] rounded-3xl overflow-hidden glass shadow-elegant animate-float">
-              {loading || !profile ? (
+              {loading && !showPhoto ? (
                 <Skeleton className="w-full h-full" />
-              ) : (
+              ) : showPhoto ? (
                 <img
-                  src={profile.photo}
-                  alt={profile.name}
+                  src={profile!.photo}
+                  alt={displayName}
                   width={768}
                   height={896}
                   className="w-full h-full object-cover"
                 />
-              )}
+              ) : null}
             </div>
             {/* Floating stat chip — toggle via SITE.showFreelanceBadge */}
             <div className={`absolute -bottom-4 -left-4 glass rounded-2xl px-4 py-3 shadow-card hidden sm:block ${SITE.showFreelanceBadge ? "" : "!hidden"}`}>

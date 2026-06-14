@@ -1,3 +1,4 @@
+import { PortfolioProvider } from "@/contexts/PortfolioContext";
 import { Navbar } from "@/components/portfolio/Navbar";
 import { Hero } from "@/components/sections/Hero";
 import { About } from "@/components/sections/About";
@@ -13,6 +14,7 @@ import { Footer } from "@/components/sections/Footer";
 
 const Index = () => {
   return (
+    <PortfolioProvider>
     <main className="relative min-h-screen bg-background text-foreground overflow-x-hidden">
       <Navbar />
       <Hero />
@@ -27,6 +29,7 @@ const Index = () => {
       <Contact />
       <Footer />
     </main>
+    </PortfolioProvider>
   );
 };
 

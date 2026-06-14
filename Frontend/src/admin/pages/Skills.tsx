@@ -10,6 +10,7 @@ import { Field } from "@/admin/components/Field";
 import { toast } from "sonner";
 import { fun } from "@/lib/toastLines";
 import { skillCategoryOptions, type SkillCategory } from "@/lib/skillCategories";
+import { useCrudReorder } from "@/admin/hooks/useCrudReorder";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -18,6 +19,7 @@ interface Skill {
   name: string;
   category: string;
   proficiency: number;
+  display_order?: number;
 }
 
 const empty: Omit<Skill, "id"> = { name: "", category: "Frontend" as SkillCategory, proficiency: 80 };
@@ -32,6 +34,7 @@ export default function SkillsAdmin() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const onReorder = useCrudReorder("skills", items, setItems, session?.access_token);
 
   const authHeaders = (token: string) => ({
     "Content-Type": "application/json",
@@ -81,7 +84,7 @@ export default function SkillsAdmin() {
           name: form.name,
           category: form.category,
           proficiency: form.proficiency,
-          display_order: 0,
+          display_order: editing?.display_order ?? items.length,
         }),
       });
       if (!res.ok) {
@@ -133,6 +136,7 @@ export default function SkillsAdmin() {
         ]}
         onEdit={startEdit}
         onDelete={(s) => setConfirm(s)}
+        onReorder={onReorder}
       />
       <FormDialog open={open} onOpenChange={setOpen} title={editing ? "Edit skill" : "New skill"} onSubmit={onSave} submitting={saving}>
         <Field label="Name">

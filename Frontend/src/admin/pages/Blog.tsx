@@ -11,6 +11,7 @@ import { Field } from "@/admin/components/Field";
 import { ImageUpload } from "@/admin/components/ImageUpload";
 import { toast } from "sonner";
 import { fun } from "@/lib/toastLines";
+import { useCrudReorder } from "@/admin/hooks/useCrudReorder";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -89,6 +90,7 @@ export default function BlogAdmin() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const onReorder = useCrudReorder("blog-posts", items, setItems, session?.access_token);
 
   const fetchPosts = async (opts?: { silent?: boolean }) => {
     if (!session?.access_token) return;
@@ -219,6 +221,7 @@ export default function BlogAdmin() {
         ]}
         onEdit={startEdit}
         onDelete={(x) => setConfirm(x)}
+        onReorder={onReorder}
       />
       <FormDialog
         open={open}

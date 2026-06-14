@@ -13,6 +13,7 @@ import { ImageUpload, type ImageUploadHandle } from "@/admin/components/ImageUpl
 import { toast } from "sonner";
 import { fun } from "@/lib/toastLines";
 import { projectCategoryOptions, type ProjectCategory } from "@/lib/projectCategories";
+import { useCrudReorder } from "@/admin/hooks/useCrudReorder";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -56,6 +57,10 @@ const empty: Omit<Project, "id"> = {
   results: "",
 };
 
+function parseCommaList(value: string): string[] {
+  return value.split(",").map((s) => s.trim()).filter(Boolean);
+}
+
 export default function ProjectsAdmin() {
   const { session } = useAuth();
   const [items, setItems] = useState<Project[]>([]);
@@ -64,11 +69,13 @@ export default function ProjectsAdmin() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Project | null>(null);
   const [form, setForm] = useState<Omit<Project, "id">>(empty);
+  const [techStackText, setTechStackText] = useState("");
   const [confirm, setConfirm] = useState<Project | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   // ref to trigger image upload on save
   const imgRef = useRef<ImageUploadHandle>(null);
+  const onReorder = useCrudReorder("projects", items, setItems, session?.access_token);
 
   const fetchProjects = async (opts?: { silent?: boolean }) => {
     if (!session?.access_token) return;
@@ -94,6 +101,7 @@ export default function ProjectsAdmin() {
   const startCreate = () => {
     setEditing(null);
     setForm(empty);
+    setTechStackText("");
     setOpen(true);
   };
 
@@ -102,6 +110,7 @@ export default function ProjectsAdmin() {
     const { id, ...rest } = p;
     void id;
     setForm(rest);
+    setTechStackText((rest.tech_stack ?? []).join(", "));
     setOpen(true);
   };
 
@@ -123,6 +132,7 @@ export default function ProjectsAdmin() {
 
       const payload = {
         ...form,
+        tech_stack: parseCommaList(techStackText),
         cover_image_url,
         images: cover_image_url ? [cover_image_url] : form.images,
         slug: form.title.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-"),
@@ -191,6 +201,7 @@ export default function ProjectsAdmin() {
         ]}
         onEdit={startEdit}
         onDelete={(p) => setConfirm(p)}
+        onReorder={onReorder}
       />
 
       <FormDialog
@@ -240,13 +251,8 @@ export default function ProjectsAdmin() {
         </Field>
         <Field label="Tech stack (comma separated)">
           <Input
-            value={form.tech_stack.join(", ")}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                tech_stack: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
-              })
-            }
+            value={techStackText}
+            onChange={(e) => setTechStackText(e.target.value)}
           />
         </Field>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -8,6 +8,7 @@ import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { Field } from "@/admin/components/Field";
 import { toast } from "sonner";
 import { fun } from "@/lib/toastLines";
+import { useCrudReorder } from "@/admin/hooks/useCrudReorder";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -46,6 +47,7 @@ export default function SocialAdmin() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const onReorder = useCrudReorder("social-links", items, setItems, session?.access_token);
 
   const fetchSocialLinks = async (opts?: { silent?: boolean }) => {
     try {
@@ -162,6 +164,7 @@ export default function SocialAdmin() {
         ]}
         onEdit={startEdit}
         onDelete={(x) => setConfirm(x)}
+        onReorder={onReorder}
       />
       <FormDialog
         open={open}

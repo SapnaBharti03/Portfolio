@@ -1,6 +1,7 @@
 export const SKILL_CATEGORIES = [
   "Frontend",
   "Backend",
+  "Framework & Libraries",
   "Database",
   "DevOps",
   "Tools",

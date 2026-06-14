@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_cors import CORS
 
@@ -24,7 +26,13 @@ app.config["SUPABASE_URL"] = SUPABASE_URL
 
 CORS(
     app,
-    origins=["http://localhost:8080", "http://127.0.0.1:8080","https://sapnas-portfolio.onrender.com"],
+    origins=[
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://sapnas-portfolio.onrender.com",
+    ],
     supports_credentials=True,
     allow_headers=[
         "Content-Type",
@@ -60,5 +68,5 @@ if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=8001,
-        debug=True
+        debug=os.getenv("FLASK_DEBUG", "0") == "1",
     )

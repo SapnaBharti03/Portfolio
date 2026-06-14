@@ -10,6 +10,7 @@ import { Field } from "@/admin/components/Field";
 import { ImageUpload, type ImageUploadHandle } from "@/admin/components/ImageUpload";
 import { toast } from "sonner";
 import { fun } from "@/lib/toastLines";
+import { useCrudReorder } from "@/admin/hooks/useCrudReorder";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -61,6 +62,7 @@ export default function TestimonialsAdmin() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const onReorder = useCrudReorder("testimonials", items, setItems, session?.access_token);
 
   // ref to trigger image upload on save
   const imgRef = useRef<ImageUploadHandle>(null);
@@ -194,6 +196,7 @@ export default function TestimonialsAdmin() {
         ]}
         onEdit={startEdit}
         onDelete={(x) => setConfirm(x)}
+        onReorder={onReorder}
       />
       <FormDialog
         open={open}

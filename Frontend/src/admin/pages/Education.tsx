@@ -9,6 +9,7 @@ import { ConfirmDialog } from "@/admin/components/ConfirmDialog";
 import { Field } from "@/admin/components/Field";
 import { toast } from "sonner";
 import { fun } from "@/lib/toastLines";
+import { useCrudReorder } from "@/admin/hooks/useCrudReorder";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -60,6 +61,7 @@ export default function EducationAdmin() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const onReorder = useCrudReorder("education", items, setItems, session?.access_token);
 
   const fetchEducation = async (opts?: { silent?: boolean }) => {
     if (!session?.access_token) return;
@@ -185,6 +187,7 @@ export default function EducationAdmin() {
         ]}
         onEdit={startEdit}
         onDelete={(x) => setConfirm(x)}
+        onReorder={onReorder}
       />
       <FormDialog
         open={open}

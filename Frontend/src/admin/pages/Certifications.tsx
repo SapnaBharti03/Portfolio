@@ -10,6 +10,7 @@ import { MonthPicker } from "@/admin/components/MonthPicker";
 import { toast } from "sonner";
 import { fun } from "@/lib/toastLines";
 import { formatMonthYear, monthInputToApiDate, toMonthInputValue } from "@/lib/dates";
+import { useCrudReorder } from "@/admin/hooks/useCrudReorder";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -55,6 +56,7 @@ export default function CertificationsAdmin() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const onReorder = useCrudReorder("certifications", items, setItems, session?.access_token);
 
   const fetchCertifications = async (opts?: { silent?: boolean }) => {
     if (!session?.access_token) return;
@@ -180,6 +182,7 @@ export default function CertificationsAdmin() {
         ]}
         onEdit={startEdit}
         onDelete={(x) => setConfirm(x)}
+        onReorder={onReorder}
       />
       <FormDialog
         open={open}

@@ -1,22 +1,29 @@
-import { useEffect, useState } from "react";
-import { fetchResource } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { fetchResource, HOME_RESOURCE_KEYS } from "@/lib/api";
+import { usePortfolioContext } from "@/contexts/PortfolioContext";
 
 export function useResource<T>(resource: string) {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const portfolio = usePortfolioContext();
+  const homeKey = HOME_RESOURCE_KEYS[resource];
 
-  useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    fetchResource<T>(resource)
-      .then((d) => mounted && setData(d))
-      .catch((e) => mounted && setError(e))
-      .finally(() => mounted && setLoading(false));
-    return () => {
-      mounted = false;
+  const query = useQuery({
+    queryKey: ["resource", resource],
+    queryFn: () => fetchResource<T>(resource),
+    staleTime: 5 * 60 * 1000,
+    enabled: !portfolio || !homeKey,
+  });
+
+  if (portfolio && homeKey) {
+    return {
+      data: (portfolio.data?.[homeKey] ?? null) as T | null,
+      loading: portfolio.loading,
+      error: portfolio.error,
     };
-  }, [resource]);
+  }
 
-  return { data, loading, error };
+  return {
+    data: (query.data ?? null) as T | null,
+    loading: query.isLoading,
+    error: (query.error as Error | null) ?? null,
+  };
 }
