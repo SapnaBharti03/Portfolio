@@ -15,6 +15,11 @@ export interface Profile {
   email: string;
   phone: string;
   location: string;
+  /* job-focused info cards */
+  experience_summary: string;
+  stack: string[];
+  availability: string;
+  skill_tags: string[];
 }
 
 export const emptyProfile = (): Profile => ({
@@ -32,6 +37,10 @@ export const emptyProfile = (): Profile => ({
   email: "",
   phone: "",
   location: "",
+  experience_summary: "",
+  stack: [],
+  availability: "",
+  skill_tags: [],
 });
 
 function parseStringArray(value: unknown): string[] {
