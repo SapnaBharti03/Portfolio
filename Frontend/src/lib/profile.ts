@@ -15,6 +15,11 @@ export interface Profile {
   email: string;
   phone: string;
   location: string;
+  /* job-focused info cards */
+  experience_summary: string;
+  stack: string[];
+  availability: string;
+  skill_tags: string[];
 }
 
 export const emptyProfile = (): Profile => ({
@@ -32,6 +37,10 @@ export const emptyProfile = (): Profile => ({
   email: "",
   phone: "",
   location: "",
+  experience_summary: "",
+  stack: [],
+  availability: "",
+  skill_tags: [],
 });
 
 function parseStringArray(value: unknown): string[] {
@@ -64,6 +73,10 @@ export function normalizeProfile(raw: Record<string, unknown>): Profile {
     email: String(raw.email ?? ""),
     phone: String(raw.phone ?? ""),
     location: String(raw.location ?? ""),
+    experience_summary: String(raw.experience_summary ?? ""),
+    stack: parseStringArray(raw.stack),
+    availability: String(raw.availability ?? ""),
+    skill_tags: parseStringArray(raw.skill_tags),
   };
 }
 
@@ -84,5 +97,9 @@ export function profileToApiPayload(form: Profile) {
     projects_completed: form.projects_completed,
     happy_clients: form.happy_clients,
     technologies_count: form.technologies_count,
+    experience_summary: form.experience_summary.trim(),
+    stack: form.stack,
+    availability: form.availability.trim(),
+    skill_tags: form.skill_tags,
   };
 }

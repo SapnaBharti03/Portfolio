@@ -81,6 +81,11 @@ export const lines = {
     "Opening the read 📖 Hope you enjoy it!",
     "Article incoming — stay a while ☕",
   ],
+  getInTouch: () => [
+    "Sliding you to the contact form — say hello 👋",
+    "Let's start a conversation ☕ Scrolling down!",
+    "Get in touch mode activated 📬 Drop me a line.",
+  ],
   validation: (msg: string) => msg,
 };
 
@@ -102,4 +107,5 @@ export const fun = {
   filterChange: (cat: string) => pick(lines.filterChange(cat)),
   projectOpen: (title: string) => pick(lines.projectOpen(title)),
   blogOpen: () => pick(lines.blogOpen()),
+  getInTouch: () => pick(lines.getInTouch()),
 };

@@ -10,7 +10,7 @@ import { emptyProfile, normalizeProfile, profileToApiPayload, type Profile } fro
 import { toast } from "sonner";
 import { fun } from "@/lib/toastLines";
 import { z } from "zod";
-import { User, BarChart3, Mail, AlignLeft } from "lucide-react";
+import { User, BarChart3, Mail, AlignLeft, Briefcase } from "lucide-react";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -56,6 +56,8 @@ export default function ProfilePage() {
   const [profileId, setProfileId] = useState<string | null>(null);
   const [form, setForm] = useState<Profile>(() => emptyProfile());
   const [rolesText, setRolesText] = useState("");
+  const [stackText, setStackText] = useState("");
+  const [skillTagsText, setSkillTagsText] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -74,6 +76,8 @@ export default function ProfilePage() {
         setProfileId(null);
         setForm(emptyProfile());
         setRolesText("");
+        setStackText("");
+        setSkillTagsText("");
         return;
       }
       if (!res.ok) {
@@ -86,12 +90,16 @@ export default function ProfilePage() {
         setProfileId(null);
         setForm(emptyProfile());
         setRolesText("");
+        setStackText("");
+        setSkillTagsText("");
         return;
       }
       const normalized = normalizeProfile(row);
       setProfileId(normalized.id ?? null);
       setForm(normalized);
       setRolesText(normalized.roles.join(", "));
+      setStackText(normalized.stack.join(", "));
+      setSkillTagsText(normalized.skill_tags.join(", "));
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Could not load profile");
     } finally {
@@ -120,6 +128,8 @@ export default function ProfilePage() {
       const uploadedUrl = await imgRef.current?.triggerUpload();
       const photo = uploadedUrl ?? form.photo;
       const roles = parseCommaList(rolesText);
+      const stack = parseCommaList(stackText);
+      const skill_tags = parseCommaList(skillTagsText);
 
       const isCreate = !profileId;
       const url = isCreate
@@ -129,7 +139,7 @@ export default function ProfilePage() {
       const res = await fetch(url, {
         method: isCreate ? "POST" : "PUT",
         headers: authHeaders(session.access_token),
-        body: JSON.stringify(profileToApiPayload({ ...form, photo, roles })),
+        body: JSON.stringify(profileToApiPayload({ ...form, photo, roles, stack, skill_tags })),
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -141,6 +151,8 @@ export default function ProfilePage() {
         setProfileId(normalized.id ?? profileId);
         setForm(normalized);
         setRolesText(normalized.roles.join(", "));
+        setStackText(normalized.stack.join(", "));
+        setSkillTagsText(normalized.skill_tags.join(", "));
       } else {
         await fetchProfile({ silent: true });
       }
@@ -227,6 +239,43 @@ export default function ProfilePage() {
                   }
                 />
               </Field>
+            </Section>
+
+            <Section
+              title="Job Info"
+              description="Cards and tags shown on the about section."
+              icon={Briefcase}
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field label="Experience summary">
+                  <Input
+                    value={form.experience_summary}
+                    onChange={(e) => setForm({ ...form, experience_summary: e.target.value })}
+                    placeholder="e.g. 5+ years, full-stack"
+                  />
+                </Field>
+                <Field label="Availability">
+                  <Input
+                    value={form.availability}
+                    onChange={(e) => setForm({ ...form, availability: e.target.value })}
+                    placeholder="e.g. Immediate"
+                  />
+                </Field>
+                <Field label="Stack (comma separated)" className="sm:col-span-2">
+                  <Input
+                    value={stackText}
+                    onChange={(e) => setStackText(e.target.value)}
+                    placeholder="e.g. React, Node.js, PostgreSQL"
+                  />
+                </Field>
+                <Field label="Skill tags (comma separated)" className="sm:col-span-2">
+                  <Input
+                    value={skillTagsText}
+                    onChange={(e) => setSkillTagsText(e.target.value)}
+                    placeholder="e.g. JavaScript, TypeScript, Docker"
+                  />
+                </Field>
+              </div>
             </Section>
 
             <Section
