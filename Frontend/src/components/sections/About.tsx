@@ -51,7 +51,8 @@ export function About() {
   const cards = [
     {
       label: "Experience",
-      value: profile.experience_summary || `${profile.years_of_experience ?? 0}+ years, full-stack`,
+      value:
+        profile.experience_summary || "5+ years, full-stack",
     },
     {
       label: "Stack",
