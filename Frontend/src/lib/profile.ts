@@ -97,5 +97,9 @@ export function profileToApiPayload(form: Profile) {
     projects_completed: form.projects_completed,
     happy_clients: form.happy_clients,
     technologies_count: form.technologies_count,
+    experience_summary: form.experience_summary.trim(),
+    stack: form.stack,
+    availability: form.availability.trim(),
+    skill_tags: form.skill_tags,
   };
 }
