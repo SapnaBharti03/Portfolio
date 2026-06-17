@@ -56,6 +56,8 @@ export default function ProfilePage() {
   const [profileId, setProfileId] = useState<string | null>(null);
   const [form, setForm] = useState<Profile>(() => emptyProfile());
   const [rolesText, setRolesText] = useState("");
+  const [stackText, setStackText] = useState("");
+  const [skillTagsText, setSkillTagsText] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
