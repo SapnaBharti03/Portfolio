@@ -81,6 +81,11 @@ export const lines = {
     "Opening the read 📖 Hope you enjoy it!",
     "Article incoming — stay a while ☕",
   ],
+  getInTouch: () => [
+    "Sliding you to the contact form — say hello 👋",
+    "Let's start a conversation ☕ Scrolling down!",
+    "Get in touch mode activated 📬 Drop me a line.",
+  ],
   validation: (msg: string) => msg,
 };
 
