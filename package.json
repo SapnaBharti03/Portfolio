@@ -1,0 +1,10 @@
+{
+  "name": "portfolio-app",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "cd Frontend && bun run dev",
+    "build": "cd Frontend && bun run build",
+    "lint": "cd Frontend && bun run lint"
+  }
+}
