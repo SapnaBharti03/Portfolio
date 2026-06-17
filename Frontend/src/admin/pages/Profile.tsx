@@ -76,6 +76,8 @@ export default function ProfilePage() {
         setProfileId(null);
         setForm(emptyProfile());
         setRolesText("");
+        setStackText("");
+        setSkillTagsText("");
         return;
       }
       if (!res.ok) {
@@ -88,12 +90,16 @@ export default function ProfilePage() {
         setProfileId(null);
         setForm(emptyProfile());
         setRolesText("");
+        setStackText("");
+        setSkillTagsText("");
         return;
       }
       const normalized = normalizeProfile(row);
       setProfileId(normalized.id ?? null);
       setForm(normalized);
       setRolesText(normalized.roles.join(", "));
+      setStackText(normalized.stack.join(", "));
+      setSkillTagsText(normalized.skill_tags.join(", "));
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Could not load profile");
     } finally {
