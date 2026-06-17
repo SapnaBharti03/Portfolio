@@ -151,6 +151,8 @@ export default function ProfilePage() {
         setProfileId(normalized.id ?? profileId);
         setForm(normalized);
         setRolesText(normalized.roles.join(", "));
+        setStackText(normalized.stack.join(", "));
+        setSkillTagsText(normalized.skill_tags.join(", "));
       } else {
         await fetchProfile({ silent: true });
       }
