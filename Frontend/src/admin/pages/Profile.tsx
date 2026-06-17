@@ -128,6 +128,8 @@ export default function ProfilePage() {
       const uploadedUrl = await imgRef.current?.triggerUpload();
       const photo = uploadedUrl ?? form.photo;
       const roles = parseCommaList(rolesText);
+      const stack = parseCommaList(stackText);
+      const skill_tags = parseCommaList(skillTagsText);
 
       const isCreate = !profileId;
       const url = isCreate
@@ -137,7 +139,7 @@ export default function ProfilePage() {
       const res = await fetch(url, {
         method: isCreate ? "POST" : "PUT",
         headers: authHeaders(session.access_token),
-        body: JSON.stringify(profileToApiPayload({ ...form, photo, roles })),
+        body: JSON.stringify(profileToApiPayload({ ...form, photo, roles, stack, skill_tags })),
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) {
