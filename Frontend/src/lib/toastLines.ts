@@ -107,4 +107,5 @@ export const fun = {
   filterChange: (cat: string) => pick(lines.filterChange(cat)),
   projectOpen: (title: string) => pick(lines.projectOpen(title)),
   blogOpen: () => pick(lines.blogOpen()),
+  getInTouch: () => pick(lines.getInTouch()),
 };
