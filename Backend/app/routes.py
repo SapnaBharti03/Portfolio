@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request, g
 import json
 import uuid
 import os
+from concurrent.futures import ThreadPoolExecutor
 from psycopg2.extras import RealDictCursor
 from app.auth_middleware import token_required
 from app.config import (
@@ -1281,102 +1282,88 @@ def _format_profile(row):
     return p
 
 
+def _fetch_home_section(query, *, fetchone=False):
+    conn = connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        cursor.execute(query)
+        return cursor.fetchone() if fetchone else [dict(row) for row in cursor.fetchall()]
+    finally:
+        cursor.close()
+        conn.close()
+
+
 @api_bp.get("/home")
 def get_home():
     """Single request for all public portfolio data (one DB connection)."""
     try:
-        conn = connection()
-        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        queries = {
+            "profile": f"SELECT {_PROFILE_COLUMNS} FROM public.profile WHERE is_deleted = false LIMIT 1",
+            "projects": "SELECT * FROM public.projects WHERE is_deleted = false ORDER BY display_order ASC",
+            "skills": "SELECT * FROM public.skills WHERE is_deleted = false ORDER BY display_order ASC",
+            "services": """
+                SELECT id, title, description, icon, starting_price, display_order
+                FROM public.services
+                WHERE is_deleted = false
+                ORDER BY display_order ASC
+            """,
+            "experience": """
+                SELECT id, company_name, role, employment_type, start_date, end_date,
+                       is_current, description, achievements, display_order
+                FROM public.experience
+                WHERE is_deleted = false
+                ORDER BY display_order ASC
+            """,
+            "education": """
+                SELECT id, degree, field_of_study, institution, start_year, end_year, description
+                FROM public.education
+                WHERE is_deleted = false
+                ORDER BY start_year DESC
+            """,
+            "certifications": """
+                SELECT id, name, issuing_organization, issue_date, credential_url
+                FROM public.certifications
+                WHERE is_deleted = false
+                ORDER BY issue_date DESC
+            """,
+            "testimonials": """
+                SELECT id, client_name, company, position, review_text, star_rating, client_photo_url
+                FROM public.testimonials
+                WHERE is_deleted = false
+                ORDER BY created_at DESC
+            """,
+            "blog_posts": """
+                SELECT id, title, slug, excerpt, cover_image_url, published_at, tags, content, created_by, status
+                FROM public.blog_posts
+                WHERE is_deleted = false
+                ORDER BY published_at DESC
+            """,
+            "social_links": """
+                SELECT id, platform, url, icon
+                FROM public.social_links
+                WHERE is_deleted = false
+                ORDER BY created_at DESC
+            """,
+        }
 
-        cursor.execute(
-            f"SELECT {_PROFILE_COLUMNS} FROM public.profile WHERE is_deleted = false LIMIT 1"
-        )
-        profile_row = cursor.fetchone()
-        profile = _format_profile(profile_row) if profile_row else None
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            future_map = {
+                name: executor.submit(_fetch_home_section, query, fetchone=(name == "profile"))
+                for name, query in queries.items()
+            }
 
-        cursor.execute(
-            "SELECT * FROM public.projects WHERE is_deleted = false ORDER BY display_order ASC"
-        )
-        projects = [dict(row) for row in cursor.fetchall()]
+            profile_row = future_map["profile"].result()
+            profile = _format_profile(profile_row) if profile_row else None
+            projects = future_map["projects"].result()
+            skills = future_map["skills"].result()
+            services = future_map["services"].result()
+            experience = future_map["experience"].result()
+            education = future_map["education"].result()
+            certifications = future_map["certifications"].result()
+            testimonials = future_map["testimonials"].result()
+            blog_posts = future_map["blog_posts"].result()
+            social_links = future_map["social_links"].result()
 
-        cursor.execute(
-            "SELECT * FROM public.skills WHERE is_deleted = false ORDER BY display_order ASC"
-        )
-        skills = [dict(row) for row in cursor.fetchall()]
-
-        cursor.execute(
-            """
-            SELECT id, title, description, icon, starting_price, display_order
-            FROM public.services
-            WHERE is_deleted = false
-            ORDER BY display_order ASC
-            """
-        )
-        services = [dict(row) for row in cursor.fetchall()]
-
-        cursor.execute(
-            """
-            SELECT id, company_name, role, employment_type, start_date, end_date,
-                   is_current, description, achievements, display_order
-            FROM public.experience
-            WHERE is_deleted = false
-            ORDER BY display_order ASC
-            """
-        )
-        experience = [dict(row) for row in cursor.fetchall()]
-
-        cursor.execute(
-            """
-            SELECT id, degree, field_of_study, institution, start_year, end_year, description
-            FROM public.education
-            WHERE is_deleted = false
-            ORDER BY start_year DESC
-            """
-        )
-        education = [dict(row) for row in cursor.fetchall()]
-
-        cursor.execute(
-            """
-            SELECT id, name, issuing_organization, issue_date, credential_url
-            FROM public.certifications
-            WHERE is_deleted = false
-            ORDER BY issue_date DESC
-            """
-        )
-        certifications = [dict(row) for row in cursor.fetchall()]
-
-        cursor.execute(
-            """
-            SELECT id, client_name, company, position, review_text, star_rating, client_photo_url
-            FROM public.testimonials
-            WHERE is_deleted = false
-            ORDER BY created_at DESC
-            """
-        )
-        testimonials = [dict(row) for row in cursor.fetchall()]
-
-        cursor.execute(
-            """
-            SELECT id, title, slug, excerpt, cover_image_url, published_at, tags, content, created_by, status
-            FROM public.blog_posts
-            WHERE is_deleted = false
-            ORDER BY published_at DESC
-            """
-        )
-        blog_posts = [dict(row) for row in cursor.fetchall()]
-
-        cursor.execute(
-            """
-            SELECT id, platform, url, icon
-            FROM public.social_links
-            WHERE is_deleted = false
-            ORDER BY created_at DESC
-            """
-        )
-        social_links = [dict(row) for row in cursor.fetchall()]
-
-        cursor.close()
-        conn.close()
         return jsonify({
             "success": True,
             "profile": profile,

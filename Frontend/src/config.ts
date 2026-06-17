@@ -1,5 +1,5 @@
 export const SITE = {
-  fallbackName: "Portfolio",
+  fallbackName: "Sapna Bharti",
   fallbackTitle: "Developer",
   description: "Personal portfolio — projects, skills, experience, and contact.",
   domain: "alexcarter.dev",
