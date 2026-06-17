@@ -242,6 +242,43 @@ export default function ProfilePage() {
             </Section>
 
             <Section
+              title="Job Info"
+              description="Cards and tags shown on the about section."
+              icon={Briefcase}
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field label="Experience summary">
+                  <Input
+                    value={form.experience_summary}
+                    onChange={(e) => setForm({ ...form, experience_summary: e.target.value })}
+                    placeholder="e.g. 5+ years, full-stack"
+                  />
+                </Field>
+                <Field label="Availability">
+                  <Input
+                    value={form.availability}
+                    onChange={(e) => setForm({ ...form, availability: e.target.value })}
+                    placeholder="e.g. Immediate"
+                  />
+                </Field>
+                <Field label="Stack (comma separated)" className="sm:col-span-2">
+                  <Input
+                    value={stackText}
+                    onChange={(e) => setStackText(e.target.value)}
+                    placeholder="e.g. React, Node.js, PostgreSQL"
+                  />
+                </Field>
+                <Field label="Skill tags (comma separated)" className="sm:col-span-2">
+                  <Input
+                    value={skillTagsText}
+                    onChange={(e) => setSkillTagsText(e.target.value)}
+                    placeholder="e.g. JavaScript, TypeScript, Docker"
+                  />
+                </Field>
+              </div>
+            </Section>
+
+            <Section
               title="Stats"
               description="Counters displayed in the hero section."
               icon={BarChart3}
