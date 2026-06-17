@@ -73,6 +73,10 @@ export function normalizeProfile(raw: Record<string, unknown>): Profile {
     email: String(raw.email ?? ""),
     phone: String(raw.phone ?? ""),
     location: String(raw.location ?? ""),
+    experience_summary: String(raw.experience_summary ?? ""),
+    stack: parseStringArray(raw.stack),
+    availability: String(raw.availability ?? ""),
+    skill_tags: parseStringArray(raw.skill_tags),
   };
 }
 
