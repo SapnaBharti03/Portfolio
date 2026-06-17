@@ -10,7 +10,7 @@ import { emptyProfile, normalizeProfile, profileToApiPayload, type Profile } fro
 import { toast } from "sonner";
 import { fun } from "@/lib/toastLines";
 import { z } from "zod";
-import { User, BarChart3, Mail, AlignLeft } from "lucide-react";
+import { User, BarChart3, Mail, AlignLeft, Briefcase } from "lucide-react";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
