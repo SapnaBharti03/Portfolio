@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { Field } from "@/admin/components/Field";
 import { ImageUpload, type ImageUploadHandle } from "@/admin/components/ImageUpload";
 import { ProfileFormSkeleton } from "@/admin/components/AdminSkeletons";
@@ -10,7 +11,7 @@ import { emptyProfile, normalizeProfile, profileToApiPayload, type Profile } fro
 import { toast } from "sonner";
 import { fun } from "@/lib/toastLines";
 import { z } from "zod";
-import { User, BarChart3, Mail, AlignLeft, Briefcase } from "lucide-react";
+import { Upload, User, BarChart3, Mail, AlignLeft, Briefcase } from "lucide-react";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -56,17 +57,52 @@ export default function ProfilePage() {
   const [profileId, setProfileId] = useState<string | null>(null);
   const [form, setForm] = useState<Profile>(() => emptyProfile());
   const [rolesText, setRolesText] = useState("");
-  const [stackText, setStackText] = useState("");
-  const [skillTagsText, setSkillTagsText] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [cvUploading, setCvUploading] = useState(false);
+  const [cvFileName, setCvFileName] = useState("");
 
   const imgRef = useRef<ImageUploadHandle>(null);
+  const cvInputRef = useRef<HTMLInputElement>(null);
 
   const authHeaders = (token: string) => ({
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
   });
+
+  const uploadCv = async (file: File) => {
+    if (!session?.access_token) {
+      toast.error("Not authenticated");
+      return;
+    }
+
+    setCvUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${BASE_URL}/api/upload?folder=documents`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: formData,
+      });
+
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((body as { error?: string }).error ?? "CV upload failed");
+
+      const url = String((body as { url?: string }).url ?? "");
+      if (!url) throw new Error("Upload did not return a file URL");
+
+      setForm((current) => ({ ...current, cv_url: url }));
+      setCvFileName(file.name);
+      toast.success("CV uploaded");
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "CV upload failed");
+    } finally {
+      setCvUploading(false);
+      if (cvInputRef.current) cvInputRef.current.value = "";
+    }
+  };
 
   const fetchProfile = async (opts?: { silent?: boolean }) => {
     try {
@@ -76,8 +112,6 @@ export default function ProfilePage() {
         setProfileId(null);
         setForm(emptyProfile());
         setRolesText("");
-        setStackText("");
-        setSkillTagsText("");
         return;
       }
       if (!res.ok) {
@@ -90,16 +124,12 @@ export default function ProfilePage() {
         setProfileId(null);
         setForm(emptyProfile());
         setRolesText("");
-        setStackText("");
-        setSkillTagsText("");
         return;
       }
       const normalized = normalizeProfile(row);
       setProfileId(normalized.id ?? null);
       setForm(normalized);
       setRolesText(normalized.roles.join(", "));
-      setStackText(normalized.stack.join(", "));
-      setSkillTagsText(normalized.skill_tags.join(", "));
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Could not load profile");
     } finally {
@@ -128,8 +158,6 @@ export default function ProfilePage() {
       const uploadedUrl = await imgRef.current?.triggerUpload();
       const photo = uploadedUrl ?? form.photo;
       const roles = parseCommaList(rolesText);
-      const stack = parseCommaList(stackText);
-      const skill_tags = parseCommaList(skillTagsText);
 
       const isCreate = !profileId;
       const url = isCreate
@@ -139,7 +167,7 @@ export default function ProfilePage() {
       const res = await fetch(url, {
         method: isCreate ? "POST" : "PUT",
         headers: authHeaders(session.access_token),
-        body: JSON.stringify(profileToApiPayload({ ...form, photo, roles, stack, skill_tags })),
+        body: JSON.stringify(profileToApiPayload({ ...form, photo, roles })),
       });
       const body = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -151,8 +179,6 @@ export default function ProfilePage() {
         setProfileId(normalized.id ?? profileId);
         setForm(normalized);
         setRolesText(normalized.roles.join(", "));
-        setStackText(normalized.stack.join(", "));
-        setSkillTagsText(normalized.skill_tags.join(", "));
       } else {
         await fetchProfile({ silent: true });
       }
@@ -243,36 +269,22 @@ export default function ProfilePage() {
 
             <Section
               title="Job Info"
-              description="Cards and tags shown on the about section."
+              description="Cards shown on the about section."
               icon={Briefcase}
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="Experience summary">
-                  <Input
-                    value={form.experience_summary}
-                    onChange={(e) => setForm({ ...form, experience_summary: e.target.value })}
-                    placeholder="e.g. 5+ years, full-stack"
-                  />
-                </Field>
                 <Field label="Availability">
                   <Input
                     value={form.availability}
                     onChange={(e) => setForm({ ...form, availability: e.target.value })}
-                    placeholder="e.g. Immediate"
+                    placeholder="e.g. Full-time & freelance"
                   />
                 </Field>
-                <Field label="Stack (comma separated)" className="sm:col-span-2">
+                <Field label="Currently learning">
                   <Input
-                    value={stackText}
-                    onChange={(e) => setStackText(e.target.value)}
-                    placeholder="e.g. React, Node.js, PostgreSQL"
-                  />
-                </Field>
-                <Field label="Skill tags (comma separated)" className="sm:col-span-2">
-                  <Input
-                    value={skillTagsText}
-                    onChange={(e) => setSkillTagsText(e.target.value)}
-                    placeholder="e.g. JavaScript, TypeScript, Docker"
+                    value={form.currently_learning}
+                    onChange={(e) => setForm({ ...form, currently_learning: e.target.value })}
+                    placeholder="e.g. Celery & Redis"
                   />
                 </Field>
               </div>
@@ -283,26 +295,12 @@ export default function ProfilePage() {
               description="Counters displayed in the hero section."
               icon={BarChart3}
             >
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <Field label="Years exp.">
                   <Input
                     type="number"
                     value={form.years_of_experience}
                     onChange={(e) => setForm({ ...form, years_of_experience: Number(e.target.value) })}
-                  />
-                </Field>
-                <Field label="Projects">
-                  <Input
-                    type="number"
-                    value={form.projects_completed}
-                    onChange={(e) => setForm({ ...form, projects_completed: Number(e.target.value) })}
-                  />
-                </Field>
-                <Field label="Clients">
-                  <Input
-                    type="number"
-                    value={form.happy_clients}
-                    onChange={(e) => setForm({ ...form, happy_clients: Number(e.target.value) })}
                   />
                 </Field>
                 <Field label="Technologies">
@@ -331,7 +329,32 @@ export default function ProfilePage() {
                   <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
                 </Field>
                 <Field label="CV URL">
-                  <Input value={form.cv_url} onChange={(e) => setForm({ ...form, cv_url: e.target.value })} />
+                  <div className="space-y-2">
+                    <Input value={form.cv_url} onChange={(e) => setForm({ ...form, cv_url: e.target.value })} />
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => cvInputRef.current?.click()}
+                        disabled={cvUploading}
+                      >
+                        <Upload className="h-4 w-4" />
+                        {cvUploading ? "Uploading…" : "Upload CV"}
+                      </Button>
+                      {cvFileName && <span className="text-xs text-muted-foreground">{cvFileName}</span>}
+                    </div>
+                    <input
+                      ref={cvInputRef}
+                      type="file"
+                      accept="application/pdf,.pdf,application/msword,.doc,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) void uploadCv(file);
+                      }}
+                    />
+                  </div>
                 </Field>
               </div>
             </Section>

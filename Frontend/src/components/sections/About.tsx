@@ -15,6 +15,7 @@ interface Profile {
   location: string;
   experience_summary: string;
   stack: string[];
+  currently_learning?: string;
   availability: string;
   skill_tags: string[];
 }
@@ -34,46 +35,69 @@ export function About() {
     photo: "",
     cv_url: "",
     location: "Remote / Worldwide",
-    experience_summary: "5+ years, full-stack",
-    stack: ["React", "Node.js", "PostgreSQL"],
-    availability: "Immediate",
+    experience_summary: "1 year, full-stack",
+    stack: ["Python", "Flask", "React"],
+    currently_learning: "Celery & Redis",
+    availability: "Full-time & freelance",
     skill_tags: [
-      "JavaScript",
+      "Python",
+      "Flask",
       "TypeScript",
       "React",
-      "Node.js",
       "PostgreSQL",
-      "Docker",
-      "AWS",
+      "Supabase",
     ],
   };
 
   const cards = [
     {
       label: "Experience",
-      value:
-        profile.experience_summary || "5+ years, full-stack",
+      value: profile.experience_summary || "1 year, full-stack",
     },
     {
-      label: "Stack",
-      value:
-        profile.stack?.length
-          ? profile.stack.join(" · ")
-          : "React · Node.js · PostgreSQL",
-    },
-    {
-      label: "Location",
-      value: profile.location || "Remote / Worldwide",
+      label: "Currently learning",
+      value: profile.currently_learning || "Celery & Redis",
     },
     {
       label: "Availability",
-      value: profile.availability || "Immediate",
+      value: profile.availability || "Full-time & freelance",
     },
   ];
 
   const tags = profile.skill_tags?.length
     ? profile.skill_tags
-    : ["JavaScript", "TypeScript", "React", "Node.js", "PostgreSQL", "Docker"];
+    : ["Python", "Flask", "TypeScript", "React", "PostgreSQL", "Supabase"];
+
+  const handleDownloadCv = () => {
+    toast(fun.cvDownload());
+
+    if (profile.cv_url) {
+      window.open(profile.cv_url, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    const resumeText = [
+      profile.name || "Sapna Bharti",
+      profile.experience_summary || "Full-stack developer",
+      "",
+      "About",
+      ...profile.bio,
+      "",
+      "Skills",
+      ...(tags.length ? tags : ["React", "TypeScript", "Python"]),
+      "",
+      `Location: ${profile.location || "Remote / Worldwide"}`,
+      `Availability: ${profile.availability || "Full-time & freelance"}`,
+    ].join("\n");
+
+    const blob = new Blob([resumeText], { type: "text/plain;charset=utf-8" });
+    const downloadUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = downloadUrl;
+    anchor.download = `${(profile.name || "Sapna_Bharti").replace(/\s+/g, "_")}_CV.txt`;
+    anchor.click();
+    URL.revokeObjectURL(downloadUrl);
+  };
 
   return (
     <section id="about" className="py-28 relative">
@@ -108,7 +132,7 @@ export function About() {
             </div>
           </motion.div>
 
-          {/* Bio + Info Cards + Tags + CTAs */}
+          {/* Bio + Info Cards + CTAs */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -130,7 +154,7 @@ export function About() {
             )}
 
             {/* Info cards */}
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
               {cards.map((card, i) => (
                 <motion.div
                   key={card.label}
@@ -150,30 +174,11 @@ export function About() {
               ))}
             </div>
 
-            {/* Skill tags */}
-            <div className="mt-6 flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center px-3 py-1.5 rounded-full text-sm border border-border bg-surface/60 text-foreground hover:border-primary/50 hover:bg-primary/10 transition-colors"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-
             {/* CTAs */}
             <div className="mt-8 flex flex-wrap gap-3">
-              {profile.cv_url && (
-                <Button variant="hero" size="lg" asChild>
-                  <a
-                    href={profile.cv_url}
-                    onClick={() => toast(fun.cvDownload())}
-                  >
-                    <Download className="h-4 w-4" /> Download CV
-                  </a>
-                </Button>
-              )}
+              <Button variant="hero" size="lg" onClick={handleDownloadCv}>
+                <Download className="h-4 w-4" /> Download CV
+              </Button>
               <Button
                 variant="glass"
                 size="lg"

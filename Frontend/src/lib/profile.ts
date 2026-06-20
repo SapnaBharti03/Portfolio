@@ -9,17 +9,13 @@ export interface Profile {
   photo: string;
   cv_url: string;
   years_of_experience: number;
-  projects_completed: number;
-  happy_clients: number;
   technologies_count: number;
   email: string;
   phone: string;
   location: string;
   /* job-focused info cards */
-  experience_summary: string;
-  stack: string[];
   availability: string;
-  skill_tags: string[];
+  currently_learning: string;
 }
 
 export const emptyProfile = (): Profile => ({
@@ -31,16 +27,12 @@ export const emptyProfile = (): Profile => ({
   photo: "",
   cv_url: "",
   years_of_experience: 0,
-  projects_completed: 0,
-  happy_clients: 0,
   technologies_count: 0,
   email: "",
   phone: "",
   location: "",
-  experience_summary: "",
-  stack: [],
   availability: "",
-  skill_tags: [],
+  currently_learning: "",
 });
 
 function parseStringArray(value: unknown): string[] {
@@ -67,16 +59,12 @@ export function normalizeProfile(raw: Record<string, unknown>): Profile {
     photo: String(raw.photo ?? raw.photo_url ?? ""),
     cv_url: String(raw.cv_url ?? ""),
     years_of_experience: Number(raw.years_of_experience ?? 0),
-    projects_completed: Number(raw.projects_completed ?? 0),
-    happy_clients: Number(raw.happy_clients ?? 0),
     technologies_count: Number(raw.technologies_count ?? 0),
     email: String(raw.email ?? ""),
     phone: String(raw.phone ?? ""),
     location: String(raw.location ?? ""),
-    experience_summary: String(raw.experience_summary ?? ""),
-    stack: parseStringArray(raw.stack),
     availability: String(raw.availability ?? ""),
-    skill_tags: parseStringArray(raw.skill_tags),
+    currently_learning: String(raw.currently_learning ?? ""),
   };
 }
 
@@ -94,12 +82,8 @@ export function profileToApiPayload(form: Profile) {
     phone: form.phone.trim(),
     location: form.location.trim(),
     years_of_experience: form.years_of_experience,
-    projects_completed: form.projects_completed,
-    happy_clients: form.happy_clients,
     technologies_count: form.technologies_count,
-    experience_summary: form.experience_summary.trim(),
-    stack: form.stack,
     availability: form.availability.trim(),
-    skill_tags: form.skill_tags,
+    currently_learning: form.currently_learning.trim(),
   };
 }

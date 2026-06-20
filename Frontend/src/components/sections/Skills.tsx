@@ -1,20 +1,30 @@
 import { motion } from "framer-motion";
 import { SectionHeading } from "@/components/portfolio/SectionHeading";
 import { useResource } from "@/hooks/useResource";
-import { SKILL_CATEGORIES } from "@/lib/skillCategories";
 
-interface Skill { id: number; name: string; category: string; proficiency: number }
-const order = [...SKILL_CATEGORIES];
+interface Skill {
+  id: number;
+  name: string;
+  category: string;
+  proficiency: number;
+  display_order?: number;
+}
 
 export function Skills() {
   const { data, loading } = useResource<Skill[]>("skills");
+  const skills = data ?? [];
 
-  const grouped = (data ?? []).reduce<Record<string, Skill[]>>((acc, s) => {
+  const grouped = skills.reduce<Record<string, Skill[]>>((acc, s) => {
     (acc[s.category] ||= []).push(s);
     return acc;
   }, {});
 
-  if (loading || !(data?.length)) return null;
+  const categoryOrder = skills.reduce<string[]>((acc, s) => {
+    if (!acc.includes(s.category)) acc.push(s.category);
+    return acc;
+  }, []);
+
+  if (loading || !skills.length) return null;
 
   return (
     <section id="skills" className="py-28 relative">
@@ -22,7 +32,7 @@ export function Skills() {
         <SectionHeading eyebrow="Skills" title="The toolbox" description="Technologies I reach for to ship great products." />
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {order
+          {categoryOrder
             .filter((cat) => grouped[cat]?.length)
             .map((cat, idx) => (
               <motion.div

@@ -24,6 +24,36 @@ export function Hero() {
 
   const scrollTo = (id: string) => document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
 
+  const handleDownloadCv = () => {
+    toast(fun.cvDownload());
+
+    if (profile?.cv_url) {
+      window.open(profile.cv_url, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    const resumeText = [
+      displayName,
+      profile?.title?.trim() || "UI/UX Designer",
+      "",
+      "About",
+      displayTagline,
+      "",
+      "Roles",
+      ...(profile?.roles?.length ? profile.roles : ["UI/UX Designer", "Full Stack Developer"]),
+      "",
+      `Photo: ${profile?.photo ? "Available" : "Not set"}`,
+    ].join("\n");
+
+    const blob = new Blob([resumeText], { type: "text/plain;charset=utf-8" });
+    const downloadUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = downloadUrl;
+    anchor.download = `${(displayName || "Sapna Bharti").replace(/\s+/g, "_")}_CV.txt`;
+    anchor.click();
+    URL.revokeObjectURL(downloadUrl);
+  };
+
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-28 pb-16 overflow-hidden">
       {/* Animated background */}
@@ -66,11 +96,9 @@ export function Hero() {
             <Button variant="glass" size="xl" onClick={() => { toast(fun.hireMe()); scrollTo("#contact"); }}>
               Hire Me
             </Button>
-            {profile?.cv_url && (
-              <Button variant="ghost" size="xl" asChild>
-                <a href={profile.cv_url} onClick={() => toast(fun.cvDownload())}><Download className="h-4 w-4" /> Download CV</a>
-              </Button>
-            )}
+            <Button variant="ghost" size="xl" onClick={handleDownloadCv}>
+              <Download className="h-4 w-4" /> Download CV
+            </Button>
           </div>
 
           <div className="mt-10 flex items-center gap-6">

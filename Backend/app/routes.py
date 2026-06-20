@@ -84,18 +84,18 @@ def reorder_items(resource):
 @token_required
 def upload_image():
     """
-    Upload an image to Supabase Storage and return its public URL.
+    Upload a file to Supabase Storage and return its public URL.
 
     Query param:
         folder (optional): subfolder in bucket e.g. projects, profile,
-                           testimonials, blog. Defaults to 'general'.
+                           testimonials, blog, documents. Defaults to 'general'.
 
     Form data:
         file: the image file (multipart/form-data)
 
     Response:
         { success, url, path }
-        - url  → pass this directly to any create/update API as the image field
+        - url  → pass this directly to any create/update API as the file field
         - path → store this if you want to delete the file later
     """
     if "file" not in request.files:
@@ -109,7 +109,9 @@ def upload_image():
     if file.mimetype not in ALLOWED_MIME_TYPES:
         return jsonify({
             "success": False,
-            "error": f"Invalid file type '{file.mimetype}'. Allowed: jpeg, png, webp, gif"
+            "error": (
+                f"Invalid file type '{file.mimetype}'. Allowed: jpeg, png, webp, gif, pdf, doc, docx"
+            )
         }), 400
 
     file_bytes = file.read()
@@ -1237,10 +1239,9 @@ def delete_social_link(social_link_id):
 # ─── Profile ───────────────────────────────────────────────────────────────────
 
 _PROFILE_COLUMNS = """
-    id, name, title, roles, tagline, bio,
-    photo_url, email, phone, location,
-    years_of_experience, projects_completed, happy_clients,
-    technologies_count, cv_url, created_at, updated_at
+    id, name, title, roles, tagline, bio, photo_url, email, phone, location,
+    years_of_experience,currently_learning, availability,
+    cv_url, created_at, updated_at
 """
 
 
@@ -1423,8 +1424,9 @@ def create_profile():
             INSERT INTO public.profile (
                 name, title, roles, tagline, bio,
                 photo_url, email, phone, location,
-                years_of_experience, projects_completed, happy_clients,
-                technologies_count, cv_url, created_by
+                years_of_experience,
+                technologies_count, currently_learning, availability,
+                cv_url, created_by
             )
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             RETURNING {_PROFILE_COLUMNS}
@@ -1436,8 +1438,10 @@ def create_profile():
                 _json_field(data.get("bio", [])),
                 data.get("photo_url") or data.get("photo"),
                 data.get("email"), data.get("phone"), data.get("location"),
-                data.get("years_of_experience", 0), data.get("projects_completed", 0),
-                data.get("happy_clients", 0), data.get("technologies_count", 0),
+                data.get("years_of_experience", 0),
+                data.get("technologies_count", 0),
+                data.get("currently_learning"),
+                data.get("availability"),
                 data.get("cv_url"),
                 created_by,
             )
@@ -1478,9 +1482,9 @@ def update_profile(profile_id):
                 phone               = %s,
                 location            = %s,
                 years_of_experience = %s,
-                projects_completed  = %s,
-                happy_clients       = %s,
                 technologies_count  = %s,
+                currently_learning  = %s,
+                availability        = %s,
                 cv_url              = %s,
                 updated_by          = %s,
                 updated_at          = %s
@@ -1494,8 +1498,10 @@ def update_profile(profile_id):
                 _json_field(data.get("bio", [])),
                 data.get("photo_url") or data.get("photo"),
                 data.get("email"), data.get("phone"), data.get("location"),
-                data.get("years_of_experience", 0), data.get("projects_completed", 0),
-                data.get("happy_clients", 0), data.get("technologies_count", 0),
+                data.get("years_of_experience", 0),
+                data.get("technologies_count", 0),
+                data.get("currently_learning"),
+                data.get("availability"),
                 data.get("cv_url"),
                 updated_by, datetime.now(),
                 str(uuid.UUID(profile_id)),
